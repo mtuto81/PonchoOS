@@ -1,8 +1,12 @@
 OUTPUT_FORMAT(elf64-x86-64)
-ENTRY(_start)
+ENTRY(_kernel_entry)
+
+/* Kernel is loaded at 0x100000 (1MB) by bootloader */
+BASE = 0x100000;
 
 SECTIONS
 {
+	. = BASE;
 	_KernelStart = .;
 	.text : ALIGN(0x1000)
 	{

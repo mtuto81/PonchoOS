@@ -261,9 +261,16 @@ EFI_STATUS efi_main (EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 	bootInfo.mMapDescSize = DescriptorSize;
 	bootInfo.rsdp = rsdp;
 
-	SystemTable->BootServices->ExitBootServices(ImageHandle, MapKey);
+	// Exit boot services before jumping to kernel
+	EFI_STATUS exitStatus = SystemTable->BootServices->ExitBootServices(ImageHandle, MapKey);
+	if (EFI_ERROR(exitStatus)){
+		Print(L"ExitBootServices failed\n\r");
+		return exitStatus;
+	}
 
+	// Call kernel with boot info
 	KernelStart(&bootInfo);
 
-	return EFI_SUCCESS; // Exit the UEFI application
+	// Should never reach here
+	return EFI_SUCCESS;
 }

@@ -3,20 +3,25 @@
 #include "../IO.h"
 #include "../userinput/keyboard.h"
 #include "../scheduling/pit/pit.h"
+#include "../cstr.h"
 
 __attribute__((interrupt)) void PageFault_Handler(interrupt_frame* frame){
-    Panic("Page Fault Detected");
-    while(true);
+    // Page faults have an error code - try to read CR2 for faulting address
+    uint64_t faulting_addr;
+    asm ("mov %%cr2, %0" : "=r" (faulting_addr));
+    
+    Panic("Page Fault - Check memory mapping and paging tables");
+    while(true) asm("hlt");
 }
 
 __attribute__((interrupt)) void DoubleFault_Handler(interrupt_frame* frame){
-    Panic("Double Fault Detected");
-    while(true);
+    Panic("Double Fault - Fatal CPU error, cannot continue");
+    while(true) asm("hlt");
 }
 
 __attribute__((interrupt)) void GPFault_Handler(interrupt_frame* frame){
-    Panic("General Protection Fault Detected");
-    while(true);
+    Panic("General Protection Fault - Invalid memory or privilege operation");
+    while(true) asm("hlt");
 }
 
 

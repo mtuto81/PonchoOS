@@ -1,47 +1,255 @@
 {
+    // PonchoOS Custom Build Pipeline for QEMU
     // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build",
+            "label": "PonchoOS: Build Kernel",
             "type": "shell",
-            "command": "cd kernel && make kernel buildimg"
+            "command": "make",
+            "args": ["kernel"],
+            "options": {
+                "cwd": "${workspaceFolder}/kernel"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
         },
         {
-            "label": "Run",
+            "label": "PonchoOS: Build All",
             "type": "shell",
-            "command": "powershell.exe \"Start-Process ./kernel/run.bat\""
+            "command": "make",
+            "args": ["all"],
+            "options": {
+                "cwd": "${workspaceFolder}/kernel"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
         },
         {
-            "label": "DebugRun",
+            "label": "PonchoOS: Full Rebuild",
             "type": "shell",
-            "command": "powershell.exe \"Start-Process ./kernel/runDebug.bat\""
+            "command": "make",
+            "args": ["buildall"],
+            "options": {
+                "cwd": "${workspaceFolder}/kernel"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
         },
         {
-            "label": "Debug",
+            "label": "PonchoOS: Clean",
             "type": "shell",
-            "command": "gdb ${workspaceFolder}/kernel/bin/kernel.elf && target remote localhost:1234"
+            "command": "make",
+            "args": ["clean"],
+            "options": {
+                "cwd": "${workspaceFolder}/kernel"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
         },
         {
-            "label": "Build and Debug",
+            "label": "PonchoOS: Run QEMU",
             "type": "shell",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "Build",
-                "DebugRun",
-                "Debug"
-            ]
+            "command": "make",
+            "args": ["run"],
+            "options": {
+                "cwd": "${workspaceFolder}/kernel"
+            },
+            "group": "test",
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            }
         },
         {
-            "label": "Build and Run",
+            "label": "PonchoOS: Run QEMU (Debug)",
             "type": "shell",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "Build",
-                "Run"
-            ],
-            "problemMatcher": []
+            "command": "make",
+            "args": ["run-debug"],
+            "options": {
+                "cwd": "${workspaceFolder}/kernel"
+            },
+            "group": "test",
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            }
+        },
+        {
+            "label": "PonchoOS: Build & Run",
+            "type": "shell",
+            "command": "make",
+            "args": ["buildall-run"],
+            "options": {
+                "cwd": "${workspaceFolder}/kernel"
+            },
+            "group": "test",
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            }
+        },
+        {
+            "label": "PonchoOS: Build (Pipeline)",
+            "type": "shell",
+            "command": "./build.sh",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "PonchoOS: Build & Run (Pipeline)",
+            "type": "shell",
+            "command": "./build.sh",
+            "args": ["--run"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "test",
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            }
+        },
+        {
+            "label": "PonchoOS: Build & Debug",
+            "type": "shell",
+            "command": "./build.sh",
+            "args": ["--debug", "--verbose", "--run"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "test",
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            }
+        },
+        {
+            "label": "PonchoOS: Debug with GDB",
+            "type": "shell",
+            "command": "./debug.sh",
+            "args": ["gdb"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "test",
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            }
+        },
+        {
+            "label": "PonchoOS: Debug Trace",
+            "type": "shell",
+            "command": "./debug.sh",
+            "args": ["trace"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "test",
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            }
+        },
+        {
+            "label": "PonchoOS: Memory Trace",
+            "type": "shell",
+            "command": "./debug.sh",
+            "args": ["memory"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "test",
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            }
+        },
+        {
+            "label": "PonchoOS: Show Help",
+            "type": "shell",
+            "command": "make",
+            "args": ["help"],
+            "options": {
+                "cwd": "${workspaceFolder}/kernel"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
         }
     ]
 }

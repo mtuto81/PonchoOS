@@ -1,6 +1,7 @@
 #include "pci.h"
 #include "ahci/ahci.h"
 #include "memory/heap.h"
+#include "printf.h"
 
 namespace PCI{
 
@@ -15,16 +16,11 @@ namespace PCI{
         if (pciDeviceHeader->DeviceID == 0) return;
         if (pciDeviceHeader->DeviceID == 0xFFFF) return;
 
-        GlobalRenderer->Print(GetVendorName(pciDeviceHeader->VendorID));
-        GlobalRenderer->Print(" / ");
-        GlobalRenderer->Print(GetDeviceName(pciDeviceHeader->VendorID, pciDeviceHeader->DeviceID));
-        GlobalRenderer->Print(" / ");
-        GlobalRenderer->Print(DeviceClasses[pciDeviceHeader->Class]);
-        GlobalRenderer->Print(" / ");
-        GlobalRenderer->Print(GetSubclassName(pciDeviceHeader->Class, pciDeviceHeader->Subclass));
-        GlobalRenderer->Print(" / ");
-        GlobalRenderer->Print(GetProgIFName(pciDeviceHeader->Class, pciDeviceHeader->Subclass, pciDeviceHeader->ProgIF));
-        GlobalRenderer->Next();
+        kernel_printf("    [PCI Device] %s / %s\n", GetVendorName(pciDeviceHeader->VendorID), GetDeviceName(pciDeviceHeader->VendorID, pciDeviceHeader->DeviceID));
+        kernel_printf("      - Class: %s\n", DeviceClasses[pciDeviceHeader->Class]);
+        kernel_printf("      - Subclass: %s\n", GetSubclassName(pciDeviceHeader->Class, pciDeviceHeader->Subclass));
+        kernel_printf("      - ProgIF: %s\n", GetProgIFName(pciDeviceHeader->Class, pciDeviceHeader->Subclass, pciDeviceHeader->ProgIF));
+        kernel_printf("      - Vendor ID: 0x%x, Device ID: 0x%x\n", pciDeviceHeader->VendorID, pciDeviceHeader->DeviceID);
 
         switch (pciDeviceHeader->Class){
             case 0x01: // mass storage controller
@@ -32,6 +28,7 @@ namespace PCI{
                     case 0x06: //Serial ATA 
                         switch (pciDeviceHeader->ProgIF){
                             case 0x01: //AHCI 1.0 device
+                                kernel_printf("      [AHCI] Initializing AHCI driver...\n");
                                 new AHCI::AHCIDriver(pciDeviceHeader);
                         }
                 }
